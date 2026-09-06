@@ -73,6 +73,13 @@ LOOP_MODE_OFF: Final = 0
 LOOP_MODE_NORMAL: Final = 1
 LOOP_MODE_SCHEDULE: Final = 2
 
+# Per-loop heating curve + program offsets (N = 1..4)
+LOOP_CURVE_COLD: Final = {1: 2309, 2: 2310, 3: 2311, 4: 2312}  # water °C at cold point
+LOOP_CURVE_WARM: Final = {1: 2314, 2: 2315, 3: 2316, 4: 2317}  # water °C at warm point
+LOOP_ADAPTIVE_CURVE: Final = {1: 2320, 2: 2321, 3: 2322, 4: 2323}
+LOOP_ECO_OFFSET: Final = {1: 2047, 2: 2057, 3: 2067, 4: 2077}  # x0.1 °C, signed
+LOOP_COMFORT_OFFSET: Final = {1: 2048, 2: 2058, 3: 2068, 4: 2078}  # x0.1 °C, signed
+
 # Experimental / undocumented registers (exposed disabled-by-default)
 REG_EXPERIMENTAL: Final = {
     2131: ("reg_2131", 1.0, None),

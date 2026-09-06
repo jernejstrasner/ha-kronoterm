@@ -12,13 +12,15 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
     DOMAIN,
+    LOOP_ADAPTIVE_CURVE,
+    LOOPS,
     REG_DHW_CIRCULATION_PUMP,
     REG_SYSTEM_ON,
     REG_THERMAL_DISINFECTION,
     REG_VACATION_MODE,
 )
 from .coordinator import KronotermCoordinator
-from .entity import KronotermEntity
+from .entity import KronotermEntity, register_valid
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -63,9 +65,22 @@ async def async_setup_entry(
 ) -> None:
     """Set up Kronoterm switches from a config entry."""
     coordinator: KronotermCoordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        KronotermSwitch(coordinator, description) for description in SWITCHES
-    )
+    entities = [KronotermSwitch(coordinator, description) for description in SWITCHES]
+    # Adaptive heating curve toggle, only for loops that report a real temperature.
+    for n, regs in LOOPS.items():
+        if register_valid(coordinator.data.registers, regs["temp"]):
+            entities.append(
+                KronotermSwitch(
+                    coordinator,
+                    KronotermSwitchDescription(
+                        key=f"loop_{n}_adaptive_curve",
+                        name=f"Loop {n} adaptive curve",
+                        addr=LOOP_ADAPTIVE_CURVE[n],
+                        icon="mdi:chart-bell-curve-cumulative",
+                    ),
+                )
+            )
+    async_add_entities(entities)
 
 
 class KronotermSwitch(KronotermEntity, SwitchEntity):
