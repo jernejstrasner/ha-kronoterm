@@ -47,8 +47,10 @@ REG_POWER: Final = 2129  # W, electrical input
 REG_CAPACITY: Final = 2329  # W, thermal output
 REG_COP: Final = 2371  # x0.01
 REG_SCOP: Final = 2372  # x0.01
-REG_ELECTRICAL_ENERGY: Final = 2361  # kWh
-REG_HEATING_ENERGY: Final = 2363  # x0.1 kWh
+# NOTE: documented counters 2361/2363 read 0 on firmware 3.16-1; the live
+# counters are the (formerly undocumented) 2362/2364.
+REG_ELECTRICAL_ENERGY: Final = 2362  # x1 kWh, lifetime
+REG_HEATING_ENERGY: Final = 2364  # x0.1 kWh, lifetime
 REG_PRESSURE: Final = 2326  # x0.1 bar
 REG_HP_LOAD: Final = 2327  # %
 
@@ -78,8 +80,8 @@ REG_EXPERIMENTAL: Final = {
     2147: ("reg_2147_load", 1.0, "%"),
     2172: ("reg_2172_theoretical_power", 1.0, "W"),
     2184: ("reg_2184_fan_speed", 1.0, "%"),
-    2362: ("reg_2362_energy_counter", 1.0, "kWh"),
-    2364: ("reg_2364_energy_counter", 0.1, "kWh"),
+    2361: ("reg_2361_electrical_energy_alt", 1.0, "kWh"),
+    2363: ("reg_2363_thermal_energy_alt", 0.1, "kWh"),
 }
 
 # Enum mappings (register value -> state string)

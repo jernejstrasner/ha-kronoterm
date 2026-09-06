@@ -65,6 +65,7 @@ class KronotermSensorDescription(SensorEntityDescription):
 
     addr: int
     scale: float = 1.0
+    signed: bool = False
     value_map: dict[int, str] | None = None
 
 
@@ -78,6 +79,7 @@ SENSORS: tuple[KronotermSensorDescription, ...] = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
+        signed=True,
     ),
     KronotermSensorDescription(
         key="dhw_temperature",
@@ -87,6 +89,7 @@ SENSORS: tuple[KronotermSensorDescription, ...] = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
+        signed=True,
     ),
     KronotermSensorDescription(
         key="hp_inlet_temperature",
@@ -96,6 +99,7 @@ SENSORS: tuple[KronotermSensorDescription, ...] = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
+        signed=True,
         entity_registry_enabled_default=False,
     ),
     KronotermSensorDescription(
@@ -106,6 +110,7 @@ SENSORS: tuple[KronotermSensorDescription, ...] = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
+        signed=True,
     ),
     KronotermSensorDescription(
         key="compressor_inlet_temperature",
@@ -115,6 +120,7 @@ SENSORS: tuple[KronotermSensorDescription, ...] = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
+        signed=True,
         entity_registry_enabled_default=False,
     ),
     KronotermSensorDescription(
@@ -125,6 +131,7 @@ SENSORS: tuple[KronotermSensorDescription, ...] = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
+        signed=True,
         entity_registry_enabled_default=False,
     ),
     # -- performance
@@ -308,6 +315,7 @@ def _loop_sensors() -> tuple[KronotermSensorDescription, ...]:
             device_class=SensorDeviceClass.TEMPERATURE,
             native_unit_of_measurement=UnitOfTemperature.CELSIUS,
             state_class=SensorStateClass.MEASUREMENT,
+            signed=True,
         )
         for n, regs in LOOPS.items()
     )
@@ -348,7 +356,7 @@ class KronotermSensor(KronotermEntity, SensorEntity):
     @property
     def native_value(self) -> float | int | str | None:
         """Return the sensor value."""
-        value = self.raw(self.entity_description.addr)
+        value = self.raw(self.entity_description.addr, signed=self.entity_description.signed)
         if value is None:
             return None
         if self.entity_description.value_map is not None:

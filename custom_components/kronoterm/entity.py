@@ -42,19 +42,26 @@ class KronotermEntity(CoordinatorEntity[KronotermCoordinator]):
             configuration_url=f"http://{coordinator.api.host}:{coordinator.api.port}/api/health",
         )
 
-    def raw(self, addr: int) -> int | None:
-        """Return the raw register value (signed), or None if unknown/invalid."""
+    def raw(self, addr: int, signed: bool = True) -> int | None:
+        """Return the raw register value, or None if unknown/invalid.
+
+        Temperature-like registers are signed (two's complement); counters
+        and power registers are unsigned 16-bit.
+        """
         value = self.coordinator.data.registers.get(addr)
         if value is None:
             return None
-        signed = to_signed(value)
-        if signed <= -500 or signed == SENTINEL_UNSET:
+        if signed:
+            value = to_signed(value)
+            if value <= -500:  # "no sensor" sentinel (~-60.0 °C)
+                return None
+        if value == SENTINEL_UNSET:
             return None
-        return signed
+        return value
 
-    def scaled(self, addr: int, scale: float) -> float | None:
+    def scaled(self, addr: int, scale: float, signed: bool = True) -> float | None:
         """Return the scaled register value, or None if unknown/invalid."""
-        value = self.raw(addr)
+        value = self.raw(addr, signed=signed)
         return None if value is None else value * scale
 
     async def _async_write(self, addr: int, value: int) -> None:
