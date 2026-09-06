@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Kronoterm local emulator",
+        "description": "Enter the address of the Kronoterm local cloud emulator (the service impersonating wd.elektrina.si for your heat pump).",
+        "data": {
+          "host": "Emulator host",
+          "port": "Emulator API port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the emulator. Check the host and port.",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This heat pump is already configured."
+    }
+  }
+}

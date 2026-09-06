@@ -1,0 +1,12 @@
+{
+  "domain": "kronoterm",
+  "name": "Kronoterm Heat Pump (Local)",
+  "codeowners": ["@jernejstrasner"],
+  "config_flow": true,
+  "documentation": "https://github.com/jernejstrasner/ha-kronoterm",
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/jernejstrasner/ha-kronoterm/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
