@@ -16,6 +16,7 @@ SENTINEL_UNSET: Final = 0x3FFF  # 16383
 # ---------------------------------------------------------------- registers
 # System
 REG_SYSTEM_ON: Final = 2012
+REG_MODE_SWITCH: Final = 2017  # 1 cooling / 2 heating / 3 auto / 4 off
 REG_OPERATION_PROGRAM_SELECT: Final = 2013  # 0 normal / 1 eco / 2 comfort
 REG_SYSTEM_TEMP_CORRECTION: Final = 2014
 REG_VACATION_MODE: Final = 2022
@@ -30,6 +31,8 @@ REG_ERROR_FLAGS: Final = 2114
 REG_DHW_SETPOINT: Final = 2023
 REG_DHW_CURRENT_SETPOINT: Final = 2024
 REG_DHW_OPERATION_MODE: Final = 2026  # 0 off / 1 normal / 2 schedule
+REG_DHW_ECO_OFFSET: Final = 2030  # x0.1 °C, signed
+REG_DHW_COMFORT_OFFSET: Final = 2031  # x0.1 °C, signed
 REG_DHW_TEMP: Final = 2102
 REG_DHW_CIRCULATION_STATUS: Final = 2028
 REG_DHW_CIRCULATION_PUMP: Final = 2328
@@ -79,6 +82,11 @@ LOOP_CURVE_WARM: Final = {1: 2314, 2: 2315, 3: 2316, 4: 2317}  # water °C at wa
 LOOP_ADAPTIVE_CURVE: Final = {1: 2320, 2: 2321, 3: 2322, 4: 2323}
 LOOP_ECO_OFFSET: Final = {1: 2047, 2: 2057, 3: 2067, 4: 2077}  # x0.1 °C, signed
 LOOP_COMFORT_OFFSET: Final = {1: 2048, 2: 2058, 3: 2068, 4: 2078}  # x0.1 °C, signed
+# Curve-calculated water setpoint (what the controller currently aims for).
+# Loop 1's register is unidentified; 2188-2190 confirmed for loops 2-4.
+LOOP_CALC_SETPOINT: Final = {2: 2188, 3: 2189, 4: 2190}  # x0.1 °C
+# Adaptive-curve-adjusted room setpoint (only loop 2 identified).
+LOOP_ROOM_CURRENT_SETPOINT: Final = {2: 2051}  # x0.1 °C
 
 # Experimental / undocumented registers (exposed disabled-by-default)
 REG_EXPERIMENTAL: Final = {
@@ -106,3 +114,4 @@ OPERATION_PROGRAM: Final = {0: "normal", 1: "eco", 2: "comfort", 4: "screed_dryi
 ERROR_WARNING: Final = {0: "none", 1: "warning", 2: "alarm", 3: "notice"}
 OPERATION_PROGRAM_SELECT: Final = {0: "normal", 1: "eco", 2: "comfort"}
 DHW_MODE: Final = {0: "off", 1: "normal", 2: "schedule"}
+MODE_SWITCH: Final = {1: "cooling", 2: "heating", 3: "auto", 4: "off"}

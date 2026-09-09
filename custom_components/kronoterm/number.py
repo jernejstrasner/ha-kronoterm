@@ -22,6 +22,8 @@ from .const import (
     LOOP_ECO_OFFSET,
     LOOP_COMFORT_OFFSET,
     LOOPS,
+    REG_DHW_COMFORT_OFFSET,
+    REG_DHW_ECO_OFFSET,
     REG_SYSTEM_TEMP_CORRECTION,
 )
 from .coordinator import KronotermCoordinator
@@ -50,6 +52,28 @@ NUMBERS: tuple[KronotermNumberDescription, ...] = (
         max_value=5.0,
         step=1.0,
         icon="mdi:thermometer-plus",
+    ),
+    KronotermNumberDescription(
+        key="dhw_eco_offset",
+        name="DHW ECO offset",
+        addr=REG_DHW_ECO_OFFSET,
+        scale=0.1,
+        signed=True,
+        min_value=-10.0,
+        max_value=10.0,
+        step=0.5,
+        icon="mdi:leaf",
+    ),
+    KronotermNumberDescription(
+        key="dhw_comfort_offset",
+        name="DHW comfort offset",
+        addr=REG_DHW_COMFORT_OFFSET,
+        scale=0.1,
+        signed=True,
+        min_value=-10.0,
+        max_value=10.0,
+        step=0.5,
+        icon="mdi:sofa",
     ),
 )
 

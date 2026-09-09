@@ -26,6 +26,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import (
     DOMAIN,
     ERROR_WARNING,
+    LOOP_CALC_SETPOINT,
+    LOOP_ROOM_CURRENT_SETPOINT,
     LOOPS,
     OPERATION_PROGRAM,
     OPERATION_REGIME,
@@ -34,6 +36,7 @@ from .const import (
     REG_COMPRESSOR_MINUTES_DAILY,
     REG_COMPRESSOR_OUTLET_TEMP,
     REG_COP,
+    REG_DHW_CURRENT_SETPOINT,
     REG_DHW_TEMP,
     REG_ELECTRICAL_ENERGY,
     REG_ERROR_FLAGS,
@@ -90,6 +93,17 @@ SENSORS: tuple[KronotermSensorDescription, ...] = (
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
         signed=True,
+    ),
+    KronotermSensorDescription(
+        key="dhw_current_setpoint",
+        name="DHW current setpoint",
+        addr=REG_DHW_CURRENT_SETPOINT,
+        scale=0.1,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        state_class=SensorStateClass.MEASUREMENT,
+        signed=True,
+        icon="mdi:water-boiler",
     ),
     KronotermSensorDescription(
         key="hp_inlet_temperature",
@@ -305,8 +319,8 @@ EXPERIMENTAL_SENSORS: tuple[KronotermSensorDescription, ...] = tuple(
 
 
 def _loop_sensors() -> tuple[KronotermSensorDescription, ...]:
-    """Build temperature sensor descriptions for each heating loop."""
-    return tuple(
+    """Build sensor descriptions for one installed heating loop."""
+    descriptions = [
         KronotermSensorDescription(
             key=f"loop_{n}_temperature",
             name=f"Loop {n} temperature",
@@ -318,7 +332,40 @@ def _loop_sensors() -> tuple[KronotermSensorDescription, ...]:
             signed=True,
         )
         for n, regs in LOOPS.items()
-    )
+    ]
+    # Curve-calculated water setpoint (identified for loops 2-4 only).
+    descriptions += [
+        KronotermSensorDescription(
+            key=f"loop_{n}_calculated_setpoint",
+            name=f"Loop {n} calculated setpoint",
+            addr=LOOP_CALC_SETPOINT[n],
+            scale=0.1,
+            device_class=SensorDeviceClass.TEMPERATURE,
+            native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+            state_class=SensorStateClass.MEASUREMENT,
+            signed=True,
+            icon="mdi:chart-bell-curve",
+        )
+        for n in LOOPS
+        if n in LOOP_CALC_SETPOINT
+    ]
+    # Adaptive-curve-adjusted room setpoint (identified for loop 2 only).
+    descriptions += [
+        KronotermSensorDescription(
+            key=f"loop_{n}_room_current_setpoint",
+            name=f"Loop {n} room current setpoint",
+            addr=LOOP_ROOM_CURRENT_SETPOINT[n],
+            scale=0.1,
+            device_class=SensorDeviceClass.TEMPERATURE,
+            native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+            state_class=SensorStateClass.MEASUREMENT,
+            signed=True,
+            icon="mdi:home-thermometer",
+        )
+        for n in LOOPS
+        if n in LOOP_ROOM_CURRENT_SETPOINT
+    ]
+    return tuple(descriptions)
 
 
 async def async_setup_entry(
@@ -334,7 +381,8 @@ async def async_setup_entry(
     ]
     # Only create loop sensors for loops that actually report a temperature.
     for description in _loop_sensors():
-        if register_valid(coordinator.data.registers, description.addr):
+        loop = int(description.key.split("_")[1])
+        if register_valid(coordinator.data.registers, LOOPS[loop]["temp"]):
             entities.append(KronotermSensor(coordinator, description))
     async_add_entities(entities)
 
