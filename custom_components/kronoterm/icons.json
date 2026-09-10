@@ -2,13 +2,12 @@
   "entity": {
     "water_heater": {
       "dhw": {
-        "name": "Domestic hot water",
         "state_attributes": {
           "operation_mode": {
             "state": {
-              "off": "Off",
-              "normal": "Normal",
-              "schedule": "Schedule"
+              "off": "mdi:power",
+              "normal": "mdi:water-boiler",
+              "schedule": "mdi:calendar-clock"
             }
           }
         }

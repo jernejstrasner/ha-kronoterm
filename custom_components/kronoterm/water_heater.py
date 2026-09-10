@@ -41,6 +41,7 @@ class KronotermWaterHeater(KronotermEntity, WaterHeaterEntity):
     """Domestic hot water entity."""
 
     _attr_name = "Domestic hot water"
+    _attr_translation_key = "dhw"
     _attr_icon = "mdi:water-boiler"
     _attr_operation_list = OPERATION_LIST
     _attr_precision = PRECISION_TENTHS
